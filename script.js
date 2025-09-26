@@ -164,24 +164,71 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.checkout = () => {
-    if (cart.length === 0) {
-      alert("Tu carrito está vacío")
-      return
-    }
-
-    // Simulate checkout process
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const message = `¡Hola! Me interesa comprar:\n\n${cart
-      .map((item) => `• ${item.name} x${item.quantity} - S/ ${(item.price * item.quantity).toFixed(2)}`)
-      .join("\n")}\n\nTotal: S/ ${total.toFixed(2)}\n\n¿Podrían ayudarme con el proceso de compra?`
-
-    const whatsappUrl = `https://wa.me/51987654321?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, "_blank")
-
-    if (cartModal) {
-      cartModal.hide()
-    }
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío")
+    return
   }
+
+  // Calcular total
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+  // Construir mensaje en varias líneas
+  const lines = []
+  lines.push("🛒 *Nuevo pedido desde la web Termo Paz* 🛒")
+  lines.push("")
+  lines.push("📦 *Detalle de productos:*")
+  cart.forEach((item, index) => {
+    lines.push(`${index + 1}. ${item.name}`)
+    lines.push(`   🔸 Cantidad: ${item.quantity}`)
+    lines.push(`   🔸 Precio unitario: S/ ${item.price.toFixed(2)}`)
+    lines.push(`   🔸 Subtotal: S/ ${(item.price * item.quantity).toFixed(2)}`)
+    lines.push("") // línea en blanco entre productos
+  })
+  lines.push(`💰 *Total a pagar:* S/ ${total.toFixed(2)}`)
+  lines.push("")
+  lines.push("✅ Estoy interesado en realizar esta compra. Por favor confirmen y me indican cómo realizar el pago y la entrega.")
+
+  const message = lines.join("\n")
+
+  // Número del negocio (código país + número, sin + ni espacios)
+  const phone = "51918409611"
+
+  // Codificar mensaje
+  const encodedMessage = encodeURIComponent(message)
+
+  // Detectar dispositivo (básico)
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+
+  // Elegir URL más fiable según dispositivo
+  let whatsappUrl = ""
+  if (isMobile) {
+    // En móvil preferimos el URI scheme (si está instalado abrirá la app)
+    // algunos dispositivos aceptan whatsapp://send?phone=...&text=...
+    whatsappUrl = `whatsapp://send?phone=${phone}&text=${encodedMessage}`
+  } else {
+    // En desktop usar API web (más confiable para WhatsApp Web)
+    whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`
+  }
+
+  // Crear anchor temporal y hacer click (mejor compatibilidad que window.open en algunos navegadores)
+  const a = document.createElement("a")
+  a.href = whatsappUrl
+  a.target = "_blank"
+  a.rel = "noopener noreferrer"
+  document.body.appendChild(a)
+  a.click()
+
+  // Limpiar
+  setTimeout(() => {
+    a.remove()
+  }, 1000)
+
+  // Cerrar modal del carrito si existe
+  if (cartModal) {
+    cartModal.hide()
+  }
+}
+
 
   // Contact form handling
   const contactForm = document.querySelector(".contact-form")
@@ -196,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Simulate form submission
       const whatsappMessage = `Nuevo contacto desde la web:\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nMensaje: ${message}`
-      const whatsappUrl = `https://wa.me/51987654321?text=${encodeURIComponent(whatsappMessage)}`
+      const whatsappUrl = `https://wa.me/51918409611?text=${encodeURIComponent(whatsappMessage)}`
 
       window.open(whatsappUrl, "_blank")
 
