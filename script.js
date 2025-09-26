@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const message = lines.join("\n")
 
   // Número del negocio (código país + número, sin + ni espacios)
-  const phone = "51918409611"
+  const phone = "51982302625"
 
   // Codificar mensaje
   const encodedMessage = encodeURIComponent(message)
@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Simulate form submission
       const whatsappMessage = `Nuevo contacto desde la web:\n\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone}\nMensaje: ${message}`
-      const whatsappUrl = `https://wa.me/51918409611?text=${encodeURIComponent(whatsappMessage)}`
+      const whatsappUrl = `https://wa.me/51982302625?text=${encodeURIComponent(whatsappMessage)}`
 
       window.open(whatsappUrl, "_blank")
 
